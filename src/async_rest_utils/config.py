@@ -12,8 +12,6 @@ def load_rest_configs(source_system: str) -> list[dict[str, Any]]:
 
     JSON strings in the `query_template` column are converted to Python
     dictionaries.
-
-    Requires the Microsoft Fabric notebook runtime.
     """
     import notebookutils
 
