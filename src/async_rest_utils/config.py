@@ -21,7 +21,7 @@ def load_rest_configs(source_system: str) -> list[dict[str, Any]]:
         SELECT *
         FROM Ops.collections.rest_calls
         WHERE source_system = '{source_system}'
-          AND is_enabled = TRUE
+          AND is_enabled = 'true'
     """
 
     conn = notebookutils.data.connect_to_item("Ops", item_type="Lakehouse")
