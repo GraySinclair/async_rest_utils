@@ -32,7 +32,7 @@ async def run_configs(
         - create aiohttp timeout/session
         - apply optional runtime config patcher
         - apply optional auth config patcher
-        - enforce concurrency limit
+        - execute configs in controlled batches
         - pass session/config/rate limiter to fetch_fn
 
     auth_fn:
@@ -46,6 +46,11 @@ async def run_configs(
 
     fetch_fn:
         - handles API-specific pagination, record extraction, and writing
+
+    in_progress_limit:
+        - controls batch size
+        - each batch runs concurrently
+        - the next batch does not start until the current batch finishes
     """
     if in_progress_limit <= 0:
         raise ValueError("in_progress_limit must be greater than 0.")
@@ -53,35 +58,39 @@ async def run_configs(
     timeout = aiohttp.ClientTimeout(**dict(timeout_kwargs or {}))
     auth_context = await auth_fn() if auth_fn else AuthContext.no_auth()
 
+    results: list[ConfigRunResult] = []
+
     async with aiohttp.ClientSession(
         timeout=timeout,
         **auth_context.session_kwargs,
     ) as session:
-        semaphore = asyncio.Semaphore(in_progress_limit)
 
         async def run_one(cfg: Cfg) -> ConfigRunResult:
-            async with semaphore:
-                patched_cfg = cfg
+            patched_cfg = cfg
 
-                # Runtime/non-auth patching first.
-                # Example: watermark injection.
-                if cfg_patcher is not None:
-                    patched_cfg = cfg_patcher(patched_cfg)
+            # Runtime/non-auth patching first.
+            # Example: watermark injection.
+            if cfg_patcher is not None:
+                patched_cfg = cfg_patcher(patched_cfg)
 
-                # Auth-specific patching second.
-                # Example: token must be injected into request body/params.
-                if auth_context.cfg_patcher is not None:
-                    patched_cfg = auth_context.cfg_patcher(patched_cfg)
+            # Auth-specific patching second.
+            # Example: token must be injected into request body/params.
+            if auth_context.cfg_patcher is not None:
+                patched_cfg = auth_context.cfg_patcher(patched_cfg)
 
-                return await fetch_fn(
-                    session,
-                    patched_cfg,
-                    rate_limiter,
-                )
+            return await fetch_fn(
+                session,
+                patched_cfg,
+                rate_limiter,
+            )
 
-        tasks = [
-            asyncio.create_task(run_one(cfg))
-            for cfg in configs
-        ]
+        for i in range(0, len(configs), in_progress_limit):
+            batch = configs[i : i + in_progress_limit]
 
-        return await asyncio.gather(*tasks)
+            batch_results = await asyncio.gather(
+                *(run_one(cfg) for cfg in batch)
+            )
+
+            results.extend(batch_results)
+
+    return results
