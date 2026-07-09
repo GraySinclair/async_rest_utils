@@ -6,11 +6,11 @@ This package contains stable helper functions used across REST ingestion noteboo
 
 - async HTTP request execution with `aiohttp`
 - structured HTTP error handling
-- cursor-based pagination helpers
-- config/template utilities
-- Lakehouse file sink helpers
+- pagination helpers
+- template utilities
+- lakehouse file sink helpers
 - watermark helpers
-- Delta merge helpers
+- config table merge helpers
 
 The goal is to keep notebooks focused on orchestration and table-specific configuration, while moving stable reusable mechanics into a versioned Python package.
 
