@@ -24,7 +24,6 @@ class ConfigRunResult:
     table_name: str | None = None
     source_system: str | None = None
     records_written: int | None = None
-    files_written: list[str] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
