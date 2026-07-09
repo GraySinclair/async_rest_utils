@@ -1,4 +1,4 @@
-# async-rest-utils
+# async-rest-factory
 
 Reusable async REST ingestion utilities for Microsoft Fabric notebooks.
 
