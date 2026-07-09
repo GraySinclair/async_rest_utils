@@ -1,5 +1,3 @@
-# async_rest_factory/patching/__init__.py
-
 from async_rest_factory.patching.nested import (
     apply_patches,
     patches_to_patcher,
