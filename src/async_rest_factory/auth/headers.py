@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from async_rest_factory.auth.context import AuthContext
+from async_rest_factory.patching import CfgPatcher
 
 
 def token_header(
@@ -25,19 +26,11 @@ def token_header(
         -> {"Authorization": "Bearer abc", "Accept": "application/json"}
 
         token_header(
-            header_name="Authorization",
-            token="abc",
-            prefix="Token",
-        )
-        -> {"Authorization": "Token abc", "Accept": "application/json"}
-
-        token_header(
-            header_name="X-Api-Key",
+            header_name="X-Halo-Api-Key",
             token="abc",
         )
-        -> {"X-Api-Key": "abc", "Accept": "application/json"}
+        -> {"X-Halo-Api-Key": "abc", "Accept": "application/json"}
     """
-
     value = f"{prefix.rstrip()} {token}" if prefix else token
 
     headers = {
@@ -60,11 +53,14 @@ def token_auth_context(
     prefix: str | None = None,
     accept: str | None = "application/json",
     extra_headers: Mapping[str, str] | None = None,
+    cfg_patcher: CfgPatcher | None = None,
 ) -> AuthContext:
     """
     Build an AuthContext using a token-style HTTP header.
-    """
 
+    cfg_patcher should only be supplied when the auth flow itself requires
+    modifying request configs.
+    """
     return AuthContext.with_headers(
         token_header(
             header_name=header_name,
@@ -72,5 +68,6 @@ def token_auth_context(
             prefix=prefix,
             accept=accept,
             extra_headers=extra_headers,
-        )
+        ),
+        cfg_patcher=cfg_patcher,
     )
