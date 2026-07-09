@@ -4,8 +4,8 @@ from typing import Any, Mapping
 
 import aiohttp
 
-from async_rest_utils.exceptions import HttpResponseError
-from async_rest_utils.http.parsing import parse_response_body
+from async_rest_factory.exceptions import HttpResponseError
+from async_rest_factory.http.parsing import parse_response_body
 
 
 async def send_request(
