@@ -1,5 +1,3 @@
-# async_rest_factory/patching/nested.py
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -18,6 +16,9 @@ def set_nested_value(
 ) -> Cfg:
     """
     Set a nested value inside a config dictionary.
+
+    By default, returns a deep-copied config so the original config is not
+    mutated. Use in_place=True to mutate directly.
     """
     if not path:
         raise ValueError("path cannot be empty.")
@@ -71,7 +72,9 @@ def patches_to_patcher(
 def _get_path_part(container: Any, part: PathPart) -> Any:
     if isinstance(container, dict):
         if not isinstance(part, str):
-            raise TypeError(f"Expected string key for dict traversal, got {part!r}.")
+            raise TypeError(
+                f"Expected string key for dict traversal, got {part!r}."
+            )
 
         if part not in container:
             raise KeyError(f"Missing config key: {part!r}")
@@ -80,7 +83,9 @@ def _get_path_part(container: Any, part: PathPart) -> Any:
 
     if isinstance(container, list):
         if not isinstance(part, int):
-            raise TypeError(f"Expected integer index for list traversal, got {part!r}.")
+            raise TypeError(
+                f"Expected integer index for list traversal, got {part!r}."
+            )
 
         return container[part]
 
@@ -93,7 +98,9 @@ def _get_path_part(container: Any, part: PathPart) -> Any:
 def _set_path_part(container: Any, part: PathPart, value: Any) -> None:
     if isinstance(container, dict):
         if not isinstance(part, str):
-            raise TypeError(f"Expected string key for dict assignment, got {part!r}.")
+            raise TypeError(
+                f"Expected string key for dict assignment, got {part!r}."
+            )
 
         if part not in container:
             raise KeyError(f"Missing config key: {part!r}")
@@ -103,7 +110,9 @@ def _set_path_part(container: Any, part: PathPart, value: Any) -> None:
 
     if isinstance(container, list):
         if not isinstance(part, int):
-            raise TypeError(f"Expected integer index for list assignment, got {part!r}.")
+            raise TypeError(
+                f"Expected integer index for list assignment, got {part!r}."
+            )
 
         container[part] = value
         return
