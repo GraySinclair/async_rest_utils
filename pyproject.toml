@@ -1,7 +1,7 @@
 [project]
-name = "async-rest-utils"
+name = "async-rest-factory"
 dynamic = ["version"]
-description = "Reusable async REST ingestion utilities for Fabric notebooks"
+description = "async rest api factory utilities"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
