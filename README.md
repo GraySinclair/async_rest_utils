@@ -4,18 +4,6 @@ A small utility package for building reusable async REST extraction workflows.
 
 The package is designed to keep API-specific logic separate from generic execution logic.
 
-## Purpose
-
-`async-rest-factory` provides reusable building blocks for:
-
-- async HTTP requests with `aiohttp`
-- structured HTTP error handling
-- response body parsing diagnostics
-- token/header auth handoff
-- runtime config patching
-- request throttling
-- Microsoft Fabric notebook helpers
-
 ## Package areas
 
 ```text
@@ -26,18 +14,6 @@ async_rest_factory/
     http/          # send_request and response parsing
     patching/      # Runtime nested config patching
     throttling/    # Async request rate limiting
-```
-
-## Install
-
-```bash
-uv pip install async-rest-factory
-```
-
-For local development:
-
-```bash
-uv pip install -e .
 ```
 
 ## Basic usage
@@ -92,7 +68,7 @@ cfg = apply_patches(
 )
 ```
 
-## Fabric helpers
+## Quick Start helpers
 
 ```python
 from async_rest_factory.fabric import (
@@ -124,27 +100,4 @@ docs/usage/
     http.md
     patching.md
     throttling.md
-```
-
-## Design rules
-
-- API-specific logic belongs outside the generic runner.
-- Auth functions should return `AuthContext`.
-- Runtime request changes should use `patching`.
-- HTTP request/error handling should go through `send_request`.
-- Fabric-specific helpers should stay inside `fabric/`.
-- Heavy or runtime-specific imports should happen inside functions.
-
-## Development
-
-Run tests:
-
-```bash
-uv run pytest
-```
-
-Build package:
-
-```bash
-uv build
 ```
