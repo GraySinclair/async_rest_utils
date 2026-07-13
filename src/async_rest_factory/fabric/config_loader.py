@@ -14,21 +14,17 @@ def load_rest_configs(source_system: str) -> list[dict[str, Any]]:
     import notebookutils
     import pandas as pd
 
-    collections_rest_calls_table_query = f"""
-        SELECT *
-        FROM Ops.collections.rest_calls
-        WHERE source_system = '{source_system}'
-          AND is_enabled = 'true'
+    query = f"""
+    SELECT * FROM Ops.collections.rest_calls
+    WHERE source_system = '{source_system}'
+        AND is_enabled = 'true'
     """
 
-    conn = notebookutils.data.connect_to_item("Ops", item_type="Lakehouse")
-    df = conn.query(collections_rest_calls_table_query)
-
+    with notebookutils.data.connect_to_item("Ops", item_type="Lakehouse") as conn:
+            df = conn.query(query)
+    
     if df is None:
-        raise LookupError(
-            f"No REST configs returned for source_system={source_system!r}. "
-            "conn.query() returned None."
-        )
+        raise LookupError(f"No REST configs returned for source_system={source_system!r}. Query returned None.")
 
     configs = (
         df.astype(object)
